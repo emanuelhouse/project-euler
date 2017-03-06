@@ -27,3 +27,12 @@
 *.exe
 *.out
 *.app
+run
+
+
+# Backup Makefiles
+Makefile.bak
+
+# Imported libraries
+cpp/range-v3
+cpp/range-v3/*
