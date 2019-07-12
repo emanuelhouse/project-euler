@@ -40,6 +40,7 @@ long prime(int i)
 }
 
 
+
 namespace generator
 {
 using ranges::view::generate;
@@ -64,6 +65,45 @@ auto primes()
 	{
 		return prime(curr++);
 	});
+}
+
+// generate all the prime factors of c. Duplicates will be output
+// if c is divisible by a particular prime factor multiple times.
+class prime_factors : public view_facade<prime_factors>
+{
+	friend range_access;
+	long _product;
+
+	auto potential_prime_factors = primes();
+
+	long const& get() const { ;}
+	bool done() const { ;}
+	void next()
+	{
+		potential_prime_factors
+		| take_while([=](long p){ return p < _product/2; });
+	}
+
+	return [=]() mutable
+	{
+		
+		// find the next prime which divides c
+		auto it = ranges::find_if(
+			potential_prime_factors,
+			[=](long p) { return product % p == 0; });
+
+		if (it != potential_prime_factors.end())
+		{
+			largest_prime = *it;
+			product /= *it;
+			return *it;
+		}
+	}
+
+public:
+	prime_factors() = default;
+	explicit prime_factors(long product) : _product(product) {}
+
 }
 
 // auto ints(int start, int end, int stride)
