@@ -3,6 +3,8 @@
 
 #include <range/v3/all.hpp>
 
+#include "math.hpp"
+
 namespace projecteuler {
 using std::vector;
 using namespace ranges::view;
@@ -69,42 +71,40 @@ auto primes()
 
 // generate all the prime factors of c. Duplicates will be output
 // if c is divisible by a particular prime factor multiple times.
-class prime_factors : public view_facade<prime_factors>
+class prime_factors : public ranges::view_facade<prime_factors>
 {
-	friend range_access;
+	friend ranges::range_access;
 	long _product;
+	long _current_prime;
+	long _limit;
+	using primes_t = decltype(primes().begin());
+	primes_t _primes = primes().begin();
 
-	auto potential_prime_factors = primes();
-
-	long const& get() const { ;}
-	bool done() const { ;}
+	long const& read() const { return _current_prime; }
+	bool done() const { return _current_prime == 0; }
 	void next()
 	{
-		potential_prime_factors
-		| take_while([=](long p){ return p < _product/2; });
-	}
-
-	return [=]() mutable
-	{
-		
-		// find the next prime which divides c
-		auto it = ranges::find_if(
-			potential_prime_factors,
-			[=](long p) { return product % p == 0; });
-
-		if (it != potential_prime_factors.end())
-		{
-			largest_prime = *it;
-			product /= *it;
-			return *it;
+		while (_current_prime <= _limit) {
+			while (_product % _current_prime == 0) {
+				_product /= _current_prime;
+				_limit = math::isqrt(_product);
+				return;
+			}
+			_current_prime = *++_primes;
 		}
+
+		// remaining prime factor is in _product
+		_current_prime = _product;
+		_product = 0; // next call to next() will mark the sequence done
 	}
 
 public:
-	prime_factors() = default;
-	explicit prime_factors(long product) : _product(product) {}
-
-}
+	prime_factors() : _current_prime(0) {};
+	explicit prime_factors(long product)
+		: _product(product)
+		, _current_prime(product < 2 ? 0 : 2)
+		, _limit(math::isqrt(product)) {}
+};
 
 // auto ints(int start, int end, int stride)
 // {
