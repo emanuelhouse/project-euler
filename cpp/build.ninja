@@ -2,7 +2,7 @@ builddir=build
 outdir=output
 
 cxx = g++
-cxxflags = -Wall -std=c++17 -Irange-v3/include
+cxxflags = -Wall -std=c++17 -Irange-v3/include -ffast-math
 
 
 rule clone
