@@ -1,3 +1,13 @@
+# Build files
+cpp/build
+cpp/build/*
+
+# Output files
+cpp/output
+cpp/output/*
+
+
+
 # Compiled Object files
 *.slo
 *.lo

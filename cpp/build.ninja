@@ -1,0 +1,31 @@
+builddir=build
+outdir=output
+
+cxx = g++
+cxxflags = -Wall -std=c++17 -Irange-v3/include
+
+
+rule clone
+    description = Clone git repository
+    command = git clone $in $out
+
+
+rule cxx
+    description = Compile C++ libraries and object files
+    deps = gcc
+    depfile = $out.d
+    command = $cxx -o $out -MMD -MF $out.d $cxxflags -c $in
+
+rule link
+    description = Link object files and libraries into executable program
+    deps = gcc
+    depfile = $out.d
+    command = $cxx -o $out -MMD -MF $out.d $cxxflags $in
+
+build ranges-v3: clone https$://github.com/ericniebler/range-v3
+
+
+build run: link main.o
+build main.o: cxx main.cpp
+
+default run
